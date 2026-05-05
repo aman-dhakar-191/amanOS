@@ -1,0 +1,17 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Android Studio
+*.iml
+.idea/
+local.properties
+*.hprof
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/
