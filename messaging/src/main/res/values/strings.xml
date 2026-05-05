@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Messaging</string>
+    <string name="permission_denied">SMS permission denied.</string>
+    <string name="send">Send</string>
+    <string name="back">Back</string>
+</resources>
+

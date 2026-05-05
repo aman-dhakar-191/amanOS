@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="com.amanOS.USE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_MMS" />
+
+    <application
+        android:name=".MessagingApplication"
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name=".MessagingProvider"
+            android:authorities="com.amanOS.messaging.provider"
+            android:exported="true"
+            android:readPermission="com.amanOS.USE"
+            android:writePermission="com.amanOS.USE" />
+
+        <receiver
+            android:name=".SmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".SmsSendStatusReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".AgentIntentReceiver"
+            android:exported="true"
+            android:permission="com.amanOS.USE">
+            <intent-filter>
+                <action android:name="com.amanOS.messaging.action.SEND" />
+                <action android:name="com.amanOS.messaging.action.DELETE_THREAD" />
+                <action android:name="com.amanOS.messaging.action.MARK_READ" />
+                <action android:name="com.amanOS.messaging.action.OPEN_THREAD" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".AgentIntentActivity"
+            android:exported="true"
+            android:noHistory="true"
+            android:permission="com.amanOS.USE"
+            android:theme="@android:style/Theme.NoDisplay" />
+    </application>
+
+</manifest>

@@ -65,6 +65,8 @@ object AgentContract {
         const val RESULT_CODE = "result_code"
         const val RESULT_MESSAGE = "result_message"
         const val TIMESTAMP = "timestamp"
+        const val REPLY_TO_PACKAGE = "reply_to_package"
+        const val REPLY_TO_ACTION = "reply_to_action"
     }
 
     object ResultCode {

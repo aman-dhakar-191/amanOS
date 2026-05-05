@@ -21,9 +21,10 @@ dependencyResolutionManagement {
 
 rootProject.name = "amanOS"
 include(":core")
+include(":contacts")
+include(":messaging")
+include(":agenttest")
 // Future modules added here as they are built:
-// include(":contacts")
-// include(":messaging")
 // include(":notes")
 // include(":tasks")
 // include(":device")

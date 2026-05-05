@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">MyContacts</string>
+    <string name="contacts_title">My Contacts</string>
+    <string name="contacts_count">%1$d contacts</string>
+    <string name="search_contacts_label">Search contacts</string>
+    <string name="import_label">Import</string>
+    <string name="default_dialer_label">Default dialer</string>
+    <string name="default_call_account_label">Call account</string>
+    <string name="call_account_ask_every_time">Ask every time</string>
+    <string name="call_account_ask_every_time_subtitle">Show SIM chooser for each call</string>
+    <string name="call_account_no_accounts">No call accounts found here. Configure SIMs in system settings and try again.</string>
+    <string name="add_contact_label">Add contact</string>
+    <string name="edit_contact_label">Edit contact</string>
+    <string name="delete_label">Delete</string>
+    <string name="name_label">Name</string>
+    <string name="phone_label">Phone</string>
+    <string name="email_label">Email</string>
+    <string name="notes_label">Notes</string>
+    <string name="save_label">Save</string>
+    <string name="cancel_label">Cancel</string>
+    <string name="empty_title">No contacts yet</string>
+    <string name="empty_subtitle">Tap Add contact to create one, or use Import to load from your account/device contacts.</string>
+    <string name="imported_contacts_message">Imported %1$d contacts</string>
+
+    <string name="api_test_launcher_label">MyContacts API Test</string>
+    <string name="api_test_title">API Test Launcher</string>
+    <string name="api_test_search_label">Search term for provider query</string>
+    <string name="api_test_query_button">Query provider</string>
+    <string name="api_test_contact_id_label">Contact ID for call action</string>
+    <string name="api_test_call_button">Send call intent</string>
+    <string name="api_test_query_status">Fetched %1$d contact(s)</string>
+    <string name="api_test_invalid_id">Invalid contact ID</string>
+    <string name="api_test_call_sent">Call intent sent for contact ID %1$d</string>
+    <string name="api_test_call_failed">Unable to launch call test intent</string>
+    <string name="api_test_selected_id_label">Selected contact ID</string>
+    <string name="api_test_selected_label">Selected</string>
+</resources>
