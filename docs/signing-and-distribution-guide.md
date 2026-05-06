@@ -38,10 +38,23 @@ Create these secrets in GitHub repo settings:
 - `ANDROID_KEY_ALIAS`
 - `ANDROID_KEY_PASSWORD`
 
+### Password mapping (important)
+
+- `ANDROID_KEYSTORE_PASSWORD` = keystore/store password
+- `ANDROID_KEY_PASSWORD` = key/alias password
+
+If you created the keystore with a single password (common case), set both secrets to the same value.
+
 Generate base64 for `ANDROID_KEYSTORE_BASE64`:
 
 ```powershell
 [Convert]::ToBase64String([IO.File]::ReadAllBytes("release.jks")) | Set-Clipboard
+```
+
+Quick verification:
+
+```powershell
+keytool -list -v -keystore release.jks
 ```
 
 ## Step 3: Understand build behavior
