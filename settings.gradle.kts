@@ -24,6 +24,7 @@ include(":core")
 include(":contacts")
 include(":messaging")
 include(":agenttest")
+include(":updater")
 // Future modules added here as they are built:
 // include(":notes")
 // include(":tasks")

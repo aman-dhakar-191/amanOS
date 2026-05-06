@@ -23,6 +23,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,14 +32,22 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.amanOS.core.AgentContract
 import com.amanOS.core.AgentResult
+import com.amanOS.updater.GitHubReleaseUpdateSource
+import com.amanOS.updater.UpdateCheckResult
+import com.amanOS.updater.UpdateChecker
+import com.amanOS.updater.UpdateLauncher
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -177,8 +187,104 @@ private fun HomeScreen(
                 }
             }
             item {
+                UpdateFrameworkPanel()
+            }
+            item {
                 LogPanel(logs = logs, onClearLogs = onClearLogs)
             }
+        }
+    }
+}
+
+@Composable
+private fun UpdateFrameworkPanel() {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var owner by remember { mutableStateOf("your-org") }
+    var repo by remember { mutableStateOf("your-repo") }
+    var assetFilter by remember { mutableStateOf("agenttest") }
+    var status by remember { mutableStateOf("Updater check: idle") }
+    var pendingDownload by remember { mutableStateOf<String?>(null) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text("Updater framework", style = MaterialTheme.typography.titleMedium)
+            OutlinedTextField(
+                value = owner,
+                onValueChange = { owner = it },
+                label = { Text("GitHub owner") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = repo,
+                onValueChange = { repo = it },
+                label = { Text("GitHub repo") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = assetFilter,
+                onValueChange = { assetFilter = it },
+                label = { Text("Asset filter (contains)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Button(
+                onClick = {
+                    scope.launch {
+                        status = "Checking latest release..."
+                        val checker = UpdateChecker(
+                            updateSource = GitHubReleaseUpdateSource(
+                                owner = owner,
+                                repo = repo,
+                                assetNameContains = assetFilter.ifBlank { null }
+                            ),
+                            currentVersionCode = context.packageManager
+                                .getPackageInfo(context.packageName, 0)
+                                .longVersionCode
+                        )
+                        when (val result = checker.check()) {
+                            is UpdateCheckResult.UpdateAvailable -> {
+                                pendingDownload = result.update.downloadUrl
+                                status = "Update found: ${result.update.versionName}"
+                            }
+                            UpdateCheckResult.UpToDate -> {
+                                pendingDownload = null
+                                status = "No update available"
+                            }
+                            is UpdateCheckResult.Failed -> {
+                                pendingDownload = null
+                                status = "Update check failed: ${result.message}"
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Check for update")
+            }
+            Button(
+                onClick = {
+                    val url = pendingDownload ?: return@Button
+                    val opened = UpdateLauncher.openDownloadPage(context, url)
+                    status = if (opened) {
+                        "Opened download page"
+                    } else {
+                        "Unable to open download page"
+                    }
+                },
+                enabled = pendingDownload != null,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Open update download")
+            }
+            Text(status, style = MaterialTheme.typography.bodySmall)
         }
     }
 }

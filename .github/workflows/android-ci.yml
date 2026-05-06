@@ -1,0 +1,56 @@
+name: Android CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Build modules
+        run: |
+          ./gradlew :core:assembleDebug \
+            :updater:assembleDebug \
+            :contacts:assembleDebug \
+            :messaging:assembleDebug \
+            :agenttest:assembleDebug
+
+      - name: Unit tests
+        run: |
+          ./gradlew :core:testDebugUnitTest \
+            :updater:testDebugUnitTest \
+            :contacts:testDebugUnitTest \
+            :messaging:testDebugUnitTest \
+            :agenttest:testDebugUnitTest
+
+      - name: Upload APK artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-apks
+          path: |
+            contacts/build/outputs/apk/debug/*.apk
+            messaging/build/outputs/apk/debug/*.apk
+            agenttest/build/outputs/apk/debug/*.apk
+          if-no-files-found: warn
+

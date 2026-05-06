@@ -44,6 +44,7 @@ android {
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":updater"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
@@ -59,4 +60,5 @@ dependencies {
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 }
+
 
