@@ -8,7 +8,7 @@ This repository now includes:
 
 ## CI pipeline
 
-Triggers on pushes to `main`/`develop` and pull requests.
+Triggers on pushes to `master`/`develop` and pull requests.
 
 Builds:
 - `:core`
@@ -21,7 +21,11 @@ Also runs unit tests and uploads debug APK artifacts.
 
 ## Release pipeline
 
-Triggers on tags like `v1002` and also supports manual `workflow_dispatch`.
+Triggers on every push to `master` and also supports manual `workflow_dispatch`.
+On each run, the workflow:
+- checks whether the commit already has a `v*` tag
+- if not tagged, creates the next numeric tag (`v1001`, `v1002`, ...)
+- publishes a GitHub Release using that tag
 
 Publishes release assets to GitHub Releases:
 - `contacts-debug.apk`
