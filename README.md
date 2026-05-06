@@ -8,6 +8,7 @@ Personal Android agent ecosystem — a monorepo of focused modules that communic
 - Release workflow: `.github/workflows/android-release.yml`
 - Updater framework module: `:updater`
 - Full guide: `docs/ci-cd-and-updates.md`
+- Signing/distribution guide: `docs/signing-and-distribution-guide.md`
 
 Each module is an independent Android library with its own ContentProvider and BroadcastReceiver. No module talks to another directly; everything goes through `AgentContract` URIs, actions, and events.
 

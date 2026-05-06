@@ -6,6 +6,18 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+val releaseStorePath = providers.environmentVariable("ANDROID_KEYSTORE_PATH").orNull
+    ?: (findProperty("ANDROID_KEYSTORE_PATH") as String?)
+val releaseStorePassword = providers.environmentVariable("ANDROID_KEYSTORE_PASSWORD").orNull
+    ?: (findProperty("ANDROID_KEYSTORE_PASSWORD") as String?)
+val releaseKeyAlias = providers.environmentVariable("ANDROID_KEY_ALIAS").orNull
+    ?: (findProperty("ANDROID_KEY_ALIAS") as String?)
+val releaseKeyPassword = providers.environmentVariable("ANDROID_KEY_PASSWORD").orNull
+    ?: (findProperty("ANDROID_KEY_PASSWORD") as String?)
+val hasReleaseSigning = listOf(releaseStorePath, releaseStorePassword, releaseKeyAlias, releaseKeyPassword).all {
+    !it.isNullOrBlank()
+}
+
 android {
     namespace = "com.amanOS.contacts"
     compileSdk = 35
@@ -20,9 +32,21 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(requireNotNull(releaseStorePath))
+                storePassword = requireNotNull(releaseStorePassword)
+                keyAlias = requireNotNull(releaseKeyAlias)
+                keyPassword = requireNotNull(releaseKeyPassword)
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

@@ -9,6 +9,12 @@ build/
 local.properties
 *.hprof
 
+# Signing material
+*.jks
+*.keystore
+keystore.properties
+.secure/
+
 # OS
 .DS_Store
 Thumbs.db

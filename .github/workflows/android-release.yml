@@ -61,6 +61,36 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Validate signing secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            if [ -z "${!name:-}" ]; then
+              echo "Missing required secret: $name"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "Release signing is required. Configure repository secrets before running release workflow."
+            exit 1
+          fi
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Prepare keystore
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .secure
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > .secure/release.jks
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
@@ -71,18 +101,27 @@ jobs:
         run: |
           ./gradlew :core:assembleRelease \
             :updater:assembleRelease \
-            :contacts:assembleDebug \
-            :messaging:assembleDebug \
-            :agenttest:assembleDebug
+            :contacts:assembleRelease \
+            :messaging:assembleRelease \
+            :agenttest:assembleRelease
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ github.workspace }}/.secure/release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
       - name: Package release files
         run: |
           mkdir -p out
-          cp contacts/build/outputs/apk/debug/*.apk out/contacts-debug.apk || true
-          cp messaging/build/outputs/apk/debug/*.apk out/messaging-debug.apk || true
-          cp agenttest/build/outputs/apk/debug/*.apk out/agenttest-debug.apk || true
+          cp contacts/build/outputs/apk/release/*.apk out/contacts-release.apk || true
+          cp messaging/build/outputs/apk/release/*.apk out/messaging-release.apk || true
+          cp agenttest/build/outputs/apk/release/*.apk out/agenttest-release.apk || true
           cp core/build/outputs/aar/core-release.aar out/core-release.aar || true
           cp updater/build/outputs/aar/updater-release.aar out/updater-release.aar || true
+
+      - name: Cleanup keystore
+        if: always()
+        run: rm -rf .secure
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4

@@ -28,11 +28,17 @@ On each run, the workflow:
 - publishes a GitHub Release using that tag
 
 Publishes release assets to GitHub Releases:
-- `contacts-debug.apk`
-- `messaging-debug.apk`
-- `agenttest-debug.apk`
+- `contacts-release.apk`
+- `messaging-release.apk`
+- `agenttest-release.apk`
 - `core-release.aar`
 - `updater-release.aar`
+
+Required repo secrets for release signing:
+- `ANDROID_KEYSTORE_BASE64`
+- `ANDROID_KEYSTORE_PASSWORD`
+- `ANDROID_KEY_ALIAS`
+- `ANDROID_KEY_PASSWORD`
 
 ## Versioning for updates
 
@@ -69,6 +75,6 @@ when (val result = checker.check()) {
 
 ## Notes
 
-- Current release workflow publishes debug APKs to GitHub Releases.
-- For production rollout, add signed release APK/AAB generation and store deployment.
+- Release workflow publishes signed release APKs to GitHub Releases.
+- For long-term operation, follow `docs/signing-and-distribution-guide.md`.
 
